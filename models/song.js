@@ -33,7 +33,15 @@ const Song = mongoose.model(
       default: "Single",
     },
     genre: String,
-    year: String,
+    year: {
+      type: String,
+      validate: {
+        validator: function (v) {
+          return v.length === 4;
+        },
+        message: (props) => `${props.value} is not a valid year!`,
+      },
+    },
     artwork: String,
     songFile: String,
   })
