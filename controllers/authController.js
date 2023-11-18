@@ -24,11 +24,11 @@ const signup = async (req, res) => {
 
     res.status(201).json({
       status: "success",
+      message: "User created successfully.",
       data: {
         user,
       },
     });
-
   } catch (error) {
     res.status(400).json({
       status: "fail",
@@ -48,36 +48,62 @@ const signup = async (req, res) => {
  * @throws {Error} - Throws an error if the email is not found or the password is incorrect.
  */
 const login = async (req, res) => {
+  try {
+    if (req.session.user) {
+      return res.send({
+        status: "success",
+        message: "User already logged in.",
+        data: req.session.user ,
+      });
+    }
 
-  if (req.session.user) {
-    console.log("User already logged in");
-    return res.send(req.session.user);
+    const { email, password } = req.body;
+
+    if (!email)
+      return res.status(400).send({ 
+        status: "fail", 
+        message: "Email is required." 
+      });
+
+    if (!password)
+      return res.status(400).send({ 
+        status: "fail", 
+        message: "Password is required." 
+      });
+
+    let requestedUser = await User.findOne({ email });
+
+    if (!requestedUser)
+      return res.status(404).send({ 
+        status: "fail", 
+        message: "User not found." 
+      });
+
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      requestedUser.password
+    );
+
+    if (!isPasswordCorrect)
+      return res.status(401).send({ 
+        status: "fail", 
+        message: "Incorrect password." 
+      });
+
+    req.session.user = requestedUser;
+    res.cookie("user", requestedUser);
+
+    return res.send({
+      status: "success",
+      message: "Logged in successfully.",
+      data: requestedUser ,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
   }
-
-  const { email, password } = req.body;
-
-  let requestedUser = await User.findOne({ email });
-
-  if (!requestedUser) {
-    return res.status(404).send("Email not found");
-  }
-
-  const isPasswordCorrect = await bcrypt.compare(
-    password,
-    requestedUser.password
-  );
-
-  if (!isPasswordCorrect) {
-    return res.status(401).send("Incorrect password");
-  }
-
-  req.session.user = requestedUser;
-  console.log("Session created");
-
-  res.cookie("user", requestedUser);
-  console.log("User info sent to client");
-
-  return res.send(requestedUser);
 };
 
 
@@ -90,19 +116,30 @@ const login = async (req, res) => {
  * @returns {Object} - JSON response containing a message.
  */
 const logout = (req, res) => {
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).send({
+          status: "fail",
+          message: "Could not log out.",
+        });
+      }
 
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).send("Internal server error");
-    }
-    console.log("Session destroyed");
+      res.clearCookie("user");
 
-    res.clearCookie("user");
-    console.log("Cookie cleared");
-
-    res.send("Logged out");
-  });
+      res.send({
+        status: "success",
+        message: "Logged out successfully.",
+      });
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
 };
+
 
 module.exports = {
   login,
