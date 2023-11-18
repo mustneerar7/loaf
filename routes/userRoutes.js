@@ -8,7 +8,6 @@ const router = express.Router();
 
 const userController = require("../controllers/userController");
 
-router.post("/new", userController.createUser);
 router.get("/", userController.getAllUsers);
 router.get("/:id", userController.getUser);
 router.delete("/:id", userController.deleteUser);

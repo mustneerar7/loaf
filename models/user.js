@@ -29,6 +29,7 @@ var userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: [true, "Email already in use"],
   },
   password: {
     type: String,

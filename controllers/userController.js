@@ -4,36 +4,6 @@
  */
 
 const User = require("../models/user");
-const bcrypt = require("bcrypt");
-
-/**
- * Creates a new user in the database.
- * @function
- * @async
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @returns {Object} - JSON response containing the newly created user.
- */
-const createUser = async (req, res) => {
-  try {
-    const user = await User.create(req.body);
-    // add salt to password
-    user.password = await bcrypt.hash(user.password, 12);
-    await user.save();
-
-    res.status(201).json({
-      status: "success",
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
-    });
-  }
-};
 
 
 /**
@@ -177,7 +147,6 @@ const deleteSongFromLikedSongs = async (req, res) => {
 
 
 module.exports = {
-  createUser,
   getAllUsers,
   getUser,
   deleteUser,
