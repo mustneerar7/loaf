@@ -7,6 +7,7 @@ const createConnection = require("./configs/mongo");
 
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const authCheck = require("./middlewares/authCheck");
 
 const userRoutes = require("./routes/userRoutes");
 const songRoutes = require("./routes/songRoutes");
@@ -26,7 +27,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 2.592e+9
+      maxAge: 2.592e9,
     },
   })
 );
@@ -37,9 +38,9 @@ app.get("/", (req, res) => {
   res.send("Hello there 👋");
 });
 
-app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/songs", songRoutes);
-app.use("/api/v1/playlists", playlistRoutes);
+app.use("/api/v1/users", authCheck, userRoutes);
+app.use("/api/v1/songs", authCheck, songRoutes);
+app.use("/api/v1/playlists", authCheck, playlistRoutes);
 app.use("/api/v1/auth", authRoutes);
 
 app.listen(3000, () => {
