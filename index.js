@@ -3,11 +3,10 @@
  */
 
 const express = require("express");
+
 const createConnection = require("./configs/mongo");
 
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
-const authCheck = require("./middlewares/authCheck");
+const jwtValidator = require("./middlewares/jwtValidator");
 
 const userRoutes = require("./routes/userRoutes");
 const songRoutes = require("./routes/songRoutes");
@@ -21,26 +20,15 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(
-  session({
-    secret: "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 2.592e9,
-    },
-  })
-);
-app.use(cookieParser());
 
 // Endpoints
 app.get("/", (req, res) => {
   res.send("Hello there 👋");
 });
 
-app.use("/api/v1/users", authCheck, userRoutes);
-app.use("/api/v1/songs", authCheck, songRoutes);
-app.use("/api/v1/playlists", authCheck, playlistRoutes);
+app.use("/api/v1/users", jwtValidator, userRoutes);
+app.use("/api/v1/songs", jwtValidator, songRoutes);
+app.use("/api/v1/playlists", jwtValidator, playlistRoutes);
 app.use("/api/v1/auth", authRoutes);
 
 app.listen(3000, () => {

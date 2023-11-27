@@ -6,6 +6,10 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
+const jwt = require("jsonwebtoken");
+
+const secretKey = "SPECIALZ";
+
 
 /**
  * Creates a new user in the database.
@@ -49,13 +53,6 @@ const signup = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
-    if (req.session.user) {
-      return res.send({
-        status: "success",
-        message: "User already logged in.",
-        data: req.session.user ,
-      });
-    }
 
     const { email, password } = req.body;
 
@@ -90,47 +87,14 @@ const login = async (req, res) => {
         message: "Incorrect password." 
       });
 
-    req.session.user = requestedUser;
-    res.cookie("user", requestedUser);
+
+    const accessToken = jwt.sign(requestedUser.email, secretKey);
 
     return res.send({
       status: "success",
       message: "Logged in successfully.",
       data: requestedUser ,
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
-    });
-  }
-};
-
-
-/**
- * Logs out a user.
- * @function
- * @async
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @returns {Object} - JSON response containing a message.
- */
-const logout = (req, res) => {
-  try {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).send({
-          status: "fail",
-          message: "Could not log out.",
-        });
-      }
-
-      res.clearCookie("user");
-
-      res.send({
-        status: "success",
-        message: "Logged out successfully.",
-      });
+      accessToken: accessToken,
     });
   } catch (error) {
     res.status(400).json({
@@ -144,5 +108,4 @@ const logout = (req, res) => {
 module.exports = {
   login,
   signup,
-  logout,
 };
