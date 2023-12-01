@@ -3,6 +3,7 @@
  */
 
 const express = require("express");
+const cors = require("cors");
 
 const createConnection = require("./configs/mongo");
 
@@ -20,6 +21,7 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
+app.use(cors());
 
 // Endpoints
 app.get("/", (req, res) => {
@@ -31,6 +33,6 @@ app.use("/api/v1/songs", jwtValidator, songRoutes);
 app.use("/api/v1/playlists", jwtValidator, playlistRoutes);
 app.use("/api/v1/auth", authRoutes);
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+app.listen(5500, () => {
+  console.log("Server is running on port 5500");
 });
