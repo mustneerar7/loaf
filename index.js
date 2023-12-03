@@ -33,6 +33,6 @@ app.use("/api/v1/songs", jwtValidator, songRoutes);
 app.use("/api/v1/playlists", jwtValidator, playlistRoutes);
 app.use("/api/v1/auth", authRoutes);
 
-app.listen(5500, () => {
-  console.log("Server is running on port 5500");
+app.listen(8080, () => {
+  console.log("Server is running on port 8080.");
 });

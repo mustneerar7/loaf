@@ -12,6 +12,5 @@ router.get("/", userController.getAllUsers);
 router.get("/:id", userController.getUser);
 router.delete("/:id", userController.deleteUser);
 router.patch("/:id", userController.addSongToLikedSongs);
-router.patch("/:id", userController.deleteSongFromLikedSongs);
 
 module.exports = router;

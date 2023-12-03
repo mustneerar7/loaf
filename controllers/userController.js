@@ -5,7 +5,6 @@
 
 const User = require("../models/user");
 
-
 /**
  * Gets the list of all users in the database.
  * @function
@@ -33,7 +32,6 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-
 /**
  * Gets a specific user from the database.
  * @function
@@ -60,7 +58,6 @@ const getUser = async (req, res) => {
   }
 };
 
-
 /**
  * Deletes a specific user from the database.
  * @function
@@ -85,7 +82,6 @@ const deleteUser = async (req, res) => {
   }
 };
 
-
 /**
  * Adds a song to the user's liked songs.
  * @function
@@ -98,8 +94,13 @@ const addSongToLikedSongs = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
-    user.likedSongs.push(req.body.songId);
-    await user.save();
+    if (user.likedSongs.includes(req.body.songId)) {
+      user.likedSongs.pull(req.body.songId);
+      await user.save();
+    } else {
+      user.likedSongs.push(req.body.songId);
+      await user.save();
+    }
 
     res.status(200).json({
       status: "success",
@@ -114,42 +115,10 @@ const addSongToLikedSongs = async (req, res) => {
     });
   }
 };
-
-
-/**
- * Deletes a song from the user's liked songs.
- * @function
- * @async
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- * @returns {Object} - JSON response containing the updated user.
- */
-const deleteSongFromLikedSongs = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-
-    user.likedSongs.pull(req.body.songId);
-    await user.save();
-
-    res.status(200).json({
-      status: "success",
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
-    });
-  }
-};
-
 
 module.exports = {
   getAllUsers,
   getUser,
   deleteUser,
   addSongToLikedSongs,
-  deleteSongFromLikedSongs,
 };
