@@ -5,7 +5,6 @@
 
 const Song = require("../models/song");
 
-
 /**
  * Creates a new song in the database.
  * @function
@@ -31,7 +30,6 @@ const addSong = async (req, res) => {
     });
   }
 };
-
 
 /**
  * Gets the list of all songs in the database.
@@ -60,7 +58,6 @@ const getAllSongs = async (req, res) => {
   }
 };
 
-
 /**
  * Gets a specific song from the database.
  * @function
@@ -71,13 +68,12 @@ const getAllSongs = async (req, res) => {
  */
 const getSong = async (req, res) => {
   try {
-    const songs = await Song.findById(req.params.id);
-    
+    const song = await Song.findById(req.params.id);
+
     res.status(200).json({
       status: "success",
-      data: {
-        songs,
-      },
+
+      song,
     });
   } catch (error) {
     res.status(400).json({
@@ -87,10 +83,38 @@ const getSong = async (req, res) => {
   }
 };
 
+/**
+ * Gets a specific song from the database by title.
+ * @function
+ * @async
+ * @param {Object} req - Express request object containing the song title.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - JSON response containing the songs with query letters.
+ */
+const searchSong = async (req, res) => {
+  try {
+    const songs = await Song.find({
+      title: { $regex: req.params.title, $options: "i" },
+    })
+      .sort({ title: -1 })
+      .limit(10);
+
+    res.status(200).json({
+      status: "success",
+      data: {songs}
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
 
 // Exports.
 module.exports = {
   addSong,
   getAllSongs,
   getSong,
+  searchSong,
 };
