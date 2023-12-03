@@ -4,6 +4,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const dotenv = require('dotenv');
 
 const createConnection = require("./configs/mongo");
 
@@ -13,6 +14,8 @@ const userRoutes = require("./routes/userRoutes");
 const songRoutes = require("./routes/songRoutes");
 const playlistRoutes = require("./routes/playlistRoutes");
 const authRoutes = require("./routes/authRoutes");
+
+dotenv.config({ path: `${__dirname}/config.env` });
 
 // Open connection to database.
 createConnection();
@@ -33,6 +36,6 @@ app.use("/api/v1/songs", jwtValidator, songRoutes);
 app.use("/api/v1/playlists", jwtValidator, playlistRoutes);
 app.use("/api/v1/auth", authRoutes);
 
-app.listen(8080, () => {
+app.listen(process.env.PORT, () => {
   console.log("Server is running on port 8080.");
 });

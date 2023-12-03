@@ -7,10 +7,6 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
 const jwt = require("jsonwebtoken");
-
-const secretKey = "SPECIALZ";
-
-
 /**
  * Creates a new user in the database.
  * @function
@@ -41,7 +37,6 @@ const signup = async (req, res) => {
   }
 };
 
-
 /**
  * Logs in a user.
  * @function
@@ -53,27 +48,26 @@ const signup = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
-
     const { email, password } = req.body;
 
     if (!email)
-      return res.status(400).send({ 
-        status: "fail", 
-        message: "Email is required." 
+      return res.status(400).send({
+        status: "fail",
+        message: "Email is required.",
       });
 
     if (!password)
-      return res.status(400).send({ 
-        status: "fail", 
-        message: "Password is required." 
+      return res.status(400).send({
+        status: "fail",
+        message: "Password is required.",
       });
 
     let requestedUser = await User.findOne({ email });
 
     if (!requestedUser)
-      return res.status(404).send({ 
-        status: "fail", 
-        message: "User not found." 
+      return res.status(404).send({
+        status: "fail",
+        message: "User not found.",
       });
 
     const isPasswordCorrect = await bcrypt.compare(
@@ -82,18 +76,17 @@ const login = async (req, res) => {
     );
 
     if (!isPasswordCorrect)
-      return res.status(401).send({ 
-        status: "fail", 
-        message: "Incorrect password." 
+      return res.status(401).send({
+        status: "fail",
+        message: "Incorrect password.",
       });
 
-
-    const accessToken = jwt.sign(requestedUser.email, secretKey);
+    const accessToken = jwt.sign(requestedUser.email, process.env.SECRET_KEY);
 
     return res.send({
       status: "success",
       message: "Logged in successfully.",
-      data: requestedUser ,
+      data: requestedUser,
       accessToken: accessToken,
     });
   } catch (error) {
@@ -103,7 +96,6 @@ const login = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   login,

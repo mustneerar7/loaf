@@ -1,7 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-const secretKey = "SPECIALZ";
-
 const jwtValidator = (req, res, next) => {
   const token = req.header("Authorization");
 
@@ -9,7 +7,7 @@ const jwtValidator = (req, res, next) => {
     return res.status(401).json({ status: "fail", message: "Unauthorized" });
   }
 
-  jwt.verify(token, secretKey, (err, user) => {
+  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
     if (err) {
       return res.status(403).json({ status: "fail", message: "Forbidden" });
     }
