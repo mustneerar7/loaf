@@ -116,9 +116,38 @@ const addSongToLikedSongs = async (req, res) => {
   }
 };
 
+/**
+ * Gets favorite songs of a user.
+ * @function
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - JSON response indicating success or failure.
+ */
+const getUserFavorites = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).populate("likedSongs");
+    const likedSongs = user.likedSongs;
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        likedSongs
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
+
+
 module.exports = {
   getAllUsers,
   getUser,
   deleteUser,
   addSongToLikedSongs,
+  getUserFavorites,
 };
