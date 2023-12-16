@@ -20,11 +20,11 @@ var userSchema = new mongoose.Schema({
   // mandatory fields
   username: {
     type: String,
-    required: true,
+    required: false,
   },
   displayName: {
     type: String,
-    required: true,
+    required: false,
   },
   email: {
     type: String,
