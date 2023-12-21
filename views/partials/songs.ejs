@@ -1,0 +1,64 @@
+<!-- songs.ejs -->
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<h1>Songs</h1>
+<div class="table-responsive">
+  <table class="table">
+    <% if (user) { %>
+    <form action="/add-song" method="post">
+      <tr>
+        <td>
+          <input type="text" name="artwork" placeholder="Artwork url" required />
+        </td>
+        <td><input type="text" name="title" placeholder="Title" required /></td>
+        <td><input type="text" name="artist" placeholder="Artist" required /></td>
+        <td><input type="text" name="album" placeholder="Album" required /></td>
+        <td><input type="text" name="year" placeholder="Year" required /></td>
+
+        <td><button type="submit" class="btn btn-primary">Add</button></td>
+      </tr>
+    </form>
+    <% } %>
+
+    <thead>
+      <tr>
+        <th>Artwork</th>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Album</th>
+        <th>Year</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% songs.forEach(song => { %>
+      <tr>
+        <td>
+          <img
+            src="<%= song.artwork %>"
+            alt="Album Artwork"
+            style="width: 40px; height: 40px"
+          />
+        </td>
+        <td><%= song.title %></td>
+        <td><%= song.artist %></td>
+        <td><%= song.album %></td>
+        <td><%= song.year %></td>
+
+        <td>
+          <form
+            action="/delete-song/<%= song._id %>"
+            method="post"
+            style="display: inline"
+          >
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
